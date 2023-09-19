@@ -210,6 +210,38 @@ impl Todo {
         }
     }
 
+    // Remove file
+    fn remove_file(&self) {
+        match fs::remove_file(&self.todo_path) {
+            Ok(_) => {},
+            Err(e) => {
+                eprintln!("Error while clearing todo file: {}", e)
+            }
+        };
+    }
+
+    // Clear todo by removing todo file
+    pub fn reset(&self) { // fix the absence of & in github
+        if !&self.no_backup {
+            match fs::copy(&self.todo_path, &self.todo_bak) {
+                Ok(_) => self.remove_file(),
+                Err(_) => {
+                    eprintln!("Couldn't backup the todo file")
+                }
+            }
+        } else {
+            self.remove_file();
+        }
+    }
+
+    // Restore backup
+    pub fn restore(&self) {
+        fs::copy(&self.todo_bak, &self.todo_path)
+            .expect("Unable to restore the backup");
+    }
+
+
+
 
 
 
