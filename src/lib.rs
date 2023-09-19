@@ -137,7 +137,7 @@ impl Todo {
                     if symbol == "[*] " && arg[0] == "done" {
                         // DONE
                         // If the task is completed, then it prints it with a strikethrough
-                        data = format!("{}\n", task.strikethrough());
+                        data = format!("{}\n", task.strikethrough()); // fix on github
                     } else if symbol == "[ ] " && arg[0] == "todo" {
                         // NOT DONE
                         // If the task is not completed yet, then it will print it as it is
@@ -179,8 +179,8 @@ impl Todo {
     }
 
     // Removes a task
-    pub fn remove(&self, arg: &[String]) {
-        if arg.is_empty() {
+    pub fn remove(&self, args: &[String]) {
+        if args.is_empty() {
             eprintln!("todo remove takes at least 1 argument");
             process::exit(1);
         }
@@ -190,38 +190,26 @@ impl Todo {
             .truncate(true) // truncate // Fix on github
             .open(&self.todo_path)
             .expect("Couldn't open todo file");
+
+        let buffer = BufWriter::new(todo_file);
+
+        for (position, line) in self.todo.iter().enumerate() {
+            if args.contains(&"done".to_string()) && &line[..4] == "[*] " {
+                continue;
+            }
+
+            if args.contains(&(position + 1).to_string()) {
+                continue;
+            }
+
+            let line = format!("{}\n", line);
+
+            butter
+                .write(line.as_bytes())
+                .expect("Unable to write data.");
+        }
     }
 
-
-    // pub fn remove(&self, args: &[String]) {
-    //     if args.is_empty() {
-    //         eprintln!("todo rm takes at least 1 argument");
-    //         process::exit(1);
-    //     }
-    //     // Opens the TODO file with a permission to:
-    //     let todofile = OpenOptions::new()
-    //         .write(true) // a) write
-    //         .truncate(true) // b) truncrate
-    //         .open(&self.todo_path)
-    //         .expect("Couldn't open the todo file");
-    //
-    //     let mut buffer = BufWriter::new(todofile);
-    //
-    //     for (pos, line) in self.todo.iter().enumerate() {
-    //         if args.contains(&"done".to_string()) && &line[..4] == "[*] " {
-    //             continue;
-    //         }
-    //         if args.contains(&(pos + 1).to_string()) {
-    //             continue;
-    //         }
-    //
-    //         let line = format!("{}\n", line);
-    //
-    //         buffer
-    //             .write_all(line.as_bytes())
-    //             .expect("unable to write data");
-    //     }
-    // }
 
 
 
