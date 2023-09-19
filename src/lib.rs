@@ -240,6 +240,42 @@ impl Todo {
             .expect("Unable to restore the backup");
     }
 
+    // Sorts done tasks
+    pub fn sort(&self) {
+       // Create new empty string
+        let mut new_todo = String::new();
+
+        let mut todo = String::new();
+        let mut done = String::new();
+
+        for line in self.todo.iter() {
+            if line.len() > 5 {
+                if &line[..4] == "[ ] " {
+                    let line = format!("{}\n", line);
+                }else if &line[..4] = "[*] " {
+                    let line = format!("{}\n", line);
+                    done.push_str(&line);
+                }
+            }
+        }
+
+        new_todo = format!("{}{}", &todo, &done);
+
+        // Open the TODO file with permission
+        let mut todo_file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open(&self.todo_path)
+            .expect("Unable to open todo file");
+
+        // Write contents of a newtodo variable into the TODO file
+        todo_file
+            .write_all(new_todo.as_bytes())
+            .expect("Error while trying to save the todo file")
+    }
+
+    // implement fn done()
+
 
 
 
