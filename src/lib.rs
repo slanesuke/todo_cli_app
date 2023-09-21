@@ -275,13 +275,42 @@ impl Todo {
     }
 
     // implement fn done()
+    pub fn done(&self, args: &[String]) {
+        if args.is_empty() {
+            println!("todo done takes at least 1 argument");
+            process::exit(1);
+        }
 
+        let todo_file = OpenOptions::new()
+            .write(true)
+            .open(&self.todo_path)
+            .expect("Couldn't open todo file");
+        let mut buffer = BufWriter::new(todo_file);
 
+        for (position, line) in self.todo.iter().enumerate() {
+            if line.len() > 5 {
+                if args.contains(&(position + 1).to_string()) {
+                    if &line[..4] == "[ ] " {
+                        let line = format!("[*] {}\n", &line[4..]);
+                        buffer
+                            .write_all(line.as_bytes())
+                            .expect("unable to write data");
+                    } else if &line[..4] == "[*] " {
+                        let line = format!("[ ] {}\n", &line[4..]);
+                        buffer
+                            .write(&line.as_bytes())
+                            .expect("unable to write data");
+                    }
+                }else if &line[..4] == "[ ] " || &line[..4] == "[*] " {
+                    let line = format!("{}\n", line);
+                    buffer
+                        .write_all(line.as_bytes())
+                        .expect("unable to write data");
+                }
 
-
-
-
-
+                }
+            }
+        }
 
 }
 
