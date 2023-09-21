@@ -161,7 +161,7 @@ impl Todo {
         let todo_file = OpenOptions::new()
             .create(true) // create the file if it does not exist
             .append(true) // append a line to it
-            .open(self.todo_path)
+            .open(&self.todo_path)
             .expect("Could not open todo file");
 
         let mut buffer = BufWriter::new(todo_file);
@@ -312,6 +312,38 @@ impl Todo {
             }
         }
 
+}
+
+const TODO_HELP: &str = "Usage: todo [COMMAND] [ARGUMENTS]
+Todo is a super fast and simple tasks organizer written in rust
+Example: todo list
+Available commands:
+    - add [TASK/s]
+        adds new task/s
+        Example: todo add \"buy carrots\"
+    - list
+        lists all tasks
+        Example: todo list
+    - done [INDEX]
+        marks task as done
+        Example: todo done 2 3 (marks second and third tasks as completed)
+    - rm [INDEX]
+        removes a task
+        Example: todo rm 4
+    - reset
+        deletes all tasks
+    - restore
+        restore recent backup after reset
+    - sort
+        sorts completed and uncompleted tasks
+        Example: todo sort
+    - raw [todo/done]
+        prints nothing but done/incompleted tasks in plain text, useful for scripting
+        Example: todo raw done
+";
+
+pub fn help() {
+    println!("{}\n", TODO_HELP);
 }
 
 
