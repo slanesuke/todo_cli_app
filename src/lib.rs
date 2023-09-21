@@ -131,7 +131,7 @@ impl Todo {
                     // Saves the symbol for current ask
                     let symbol = &task[..4];
                     // Saves task without a symbol
-                    let talk = &task[4..];
+                    let task = &task[4..];
 
                     // Check if the current task is completed or not
                     if symbol == "[*] " && arg[0] == "done" {
@@ -191,7 +191,7 @@ impl Todo {
             .open(&self.todo_path)
             .expect("Couldn't open todo file");
 
-        let buffer = BufWriter::new(todo_file);
+        let mut buffer = BufWriter::new(todo_file);
 
         for (position, line) in self.todo.iter().enumerate() {
             if args.contains(&"done".to_string()) && &line[..4] == "[*] " {
@@ -204,8 +204,8 @@ impl Todo {
 
             let line = format!("{}\n", line);
 
-            butter
-                .write(line.as_bytes())
+            buffer
+                .write_all(line.as_bytes())
                 .expect("Unable to write data.");
         }
     }
@@ -252,6 +252,7 @@ impl Todo {
             if line.len() > 5 {
                 if &line[..4] == "[ ] " {
                     let line = format!("{}\n", line);
+                    todo.push_str(&line);
                 }else if &line[..4] = "[*] " {
                     let line = format!("{}\n", line);
                     done.push_str(&line);
